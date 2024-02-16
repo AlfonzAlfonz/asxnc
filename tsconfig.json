@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		"incremental": true,
+		"target": "esnext",
+		"moduleDetection": "force",
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		"useUnknownInCatchVariables": true,
+		"skipLibCheck": true,
+		"outDir": "./dist",
+		"declaration": true,
+		"emitDeclarationOnly": true,
+		"isolatedModules": true,
+		"allowJs": true,
+		"checkJs": true
+	},
+	"include": ["./src/**/*.ts"]
+}
