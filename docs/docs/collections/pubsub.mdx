@@ -1,0 +1,59 @@
+# pubsub()
+
+`pubsub` implements 1 reader 1 writer channel. It exposes an iterator for
+retrieving values and a dispatch function which sends value to the iterator and
+returns promise which is resolved after the value is consumed.
+
+```ts title="Definition"
+type PubSub<T> = readonly [
+	iterator: AsyncIterableIterator<T>,
+	dispatch: (value: IteratorResult<T>) => Promise<void>,
+	reject: (value: unknown) => Promise<void>,
+] & {
+	readonly iterator: AsyncIterableIterator<T>;
+	readonly dispatch: (value: IteratorResult<T>) => Promise<void>;
+	readonly reject: (value: unknown) => Promise<void>;
+};
+
+const [iterator, dispatch, reject] = pubsub();
+```
+
+## Return values
+
+`iterator` - yields values from `dispatch` or throws //todo: throws what?
+exception/error/??? if `reject` was called.
+
+`dispatch` - pushes a new value to the `iterator` and returns promise which
+resolves when the value was consumed.
+
+`reject` - makes `iterator` throw on the curently awaited value.
+
+## Examples
+
+```ts
+import { pubsub, fork } from "asxnc";
+
+test("example", async () => {
+	const [iterator, dispatch] = pubsub<number>();
+
+	const app = async () => {
+		const result = [];
+		for await (const v of iterator) {
+			result.push(v);
+		}
+		return result;
+	};
+
+	const oneToThree = async () => {
+		// every dispatch call needs to be awaited
+		await dispatch({ done: false, value: 1 });
+		await dispatch({ done: false, value: 2 });
+		await dispatch({ done: false, value: 3 });
+		await dispatch({ done: true, value: undefined });
+	};
+
+	const [result] = await fork(app, oneToThree);
+
+	expect(result).toMatchObject([1, 2, 3]);
+});
+```

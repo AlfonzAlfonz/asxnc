@@ -1,4 +1,4 @@
-import { LabeledTuple, labeledTuple } from "./utils/labeledTuple";
+import { LabeledTuple, labeledTuple } from "../utils/labeledTuple";
 
 export type EjectedPromise<T> = LabeledTuple<
 	readonly [

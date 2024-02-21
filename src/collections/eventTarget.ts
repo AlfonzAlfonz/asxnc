@@ -1,15 +1,15 @@
-import { multiplex } from "./multiplex";
-import { queue } from "./queue";
-import { asyncIterableIterator } from "./utils/asyncIterableIterator";
-import { LabeledTuple, labeledTuple } from "./utils/labeledTuple";
-import { toAsyncIterator } from "./utils/toAsyncIterator";
-import { Prettify } from "./utils/types";
+import { Multiplexed, multiplex } from "./multiplex";
+import { Queue, queue } from "./queue";
+import { asyncIterableIterator } from "../utils/asyncIterableIterator";
+import { LabeledTuple, labeledTuple } from "../utils/labeledTuple";
+import { toAsyncIterator } from "../utils/toAsyncIterator";
+import { Prettify } from "../utils/types";
 
 export interface AsxncEventTargetFunction {
 	<TEvent extends Event>(
 		collection: AsyncIterable<TEvent> | AsyncIterator<TEvent>,
 		options?: AsxncEventTargetOptions,
-	): AsxncEventTarget<TEvent>;
+	): AsxncEventTargetSubscriber<TEvent>;
 
 	<
 		TEvent extends Event,
@@ -21,10 +21,7 @@ export interface AsxncEventTargetFunction {
 			unknown,
 		],
 		options?: AsxncEventTargetOptions,
-	): LabeledTuple<
-		readonly [AsxncEventTarget<TEvent>, TDispatch],
-		readonly ["eventTarget", "dispatch"]
-	>;
+	): AsxncEventTarget<TEvent, TDispatch>;
 }
 
 type AsxncEventTargetOptions = {
@@ -33,13 +30,27 @@ type AsxncEventTargetOptions = {
 
 type Event = [string, unknown];
 
-export interface AsxncEventTarget<TEvent extends Event> {
+export interface AsxncEventTargetSubscriber<TEvent extends Event> {
 	event: <T extends TEvent[0]>(
 		type: T,
 	) => AsyncIterableIterator<Prettify<[T, unknown] & TEvent>[1]>;
 	rest: () => AsyncIterableIterator<TEvent>;
+	every: () => AsyncIterableIterator<TEvent>;
 }
 
+export type AsxncEventTarget<
+	TEvent extends Event,
+	TDispatch extends (v: IteratorResult<TEvent>) => unknown = (
+		v: IteratorResult<TEvent>,
+	) => unknown,
+> = LabeledTuple<
+	readonly [AsxncEventTargetSubscriber<TEvent>, TDispatch],
+	readonly ["eventTarget", "dispatch"]
+>;
+
+/**
+ *
+ */
 export const eventTarget: AsxncEventTargetFunction = (
 	collection: any,
 	options: any = {},
@@ -64,23 +75,27 @@ const _eventTarget = <TEvent extends Event>(
 		[AsyncIterable<TEvent[1]>, (value: IteratorResult<TEvent, unknown>) => void]
 	>();
 
-	let rest: [
-		AsyncIterable<TEvent>,
-		(value: IteratorResult<TEvent, unknown>) => void,
-		(e: unknown) => void,
-	] = null!;
+	let rest = null as Multiplexed<Queue<TEvent>> | null;
+	let every = null as Multiplexed<Queue<TEvent>> | null;
 
 	(async () => {
 		while (true) {
 			const result = await iterator.next().catch((e) => {
-				if (rest) {
-					rest[2](e);
-					return;
-				}
 				if (options.globalCatch) {
 					options.globalCatch(e);
 					return;
 				}
+
+				if (every || rest) {
+					if (every) {
+						every[2](e);
+					}
+					if (rest) {
+						rest[2](e);
+					}
+					return;
+				}
+
 				throw e;
 			});
 
@@ -95,12 +110,31 @@ const _eventTarget = <TEvent extends Event>(
 				if (rest) {
 					rest[1](result);
 				}
+				if (every) {
+					every[1](result);
+				}
+				break;
 			} else {
 				const subscriber = subscribers.get(result.value[0]);
+				let handled = false;
+
 				if (subscriber) {
+					handled = true;
 					subscriber[1](result);
-				} else {
+				} else if (rest) {
+					handled = true;
 					rest[1](result);
+				}
+
+				if (every) {
+					handled = true;
+					every[1](result);
+				}
+
+				if (!handled) {
+					console.warn(
+						`Unexpected event (key: "${result.value[0]}"), event is discarded.`,
+					);
 				}
 			}
 		}
@@ -122,11 +156,17 @@ const _eventTarget = <TEvent extends Event>(
 		},
 		rest: () => {
 			if (!rest) {
-				const [a, b, c] = queue<TEvent>();
-				rest = [a, b, c];
+				rest = multiplex(queue<TEvent>());
 			}
 
 			return asyncIterableIterator(rest[0][Symbol.asyncIterator]());
 		},
-	} satisfies AsxncEventTarget<Event>;
+		every: () => {
+			if (!every) {
+				every = multiplex(queue<TEvent>());
+			}
+
+			return asyncIterableIterator(every[0][Symbol.asyncIterator]());
+		},
+	} satisfies AsxncEventTargetSubscriber<Event>;
 };

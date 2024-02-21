@@ -1,4 +1,4 @@
-import { toAsyncIterable } from "./utils/toAsyncIterable";
+import { toAsyncIterable } from "./toAsyncIterable";
 
 export const collect = async <T>(
 	collection: AsyncIterator<T> | AsyncIterable<T>,

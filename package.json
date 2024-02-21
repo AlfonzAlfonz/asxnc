@@ -7,11 +7,15 @@
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
-			"default": "./dist/index.js"
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.cjs",
+			"default": "./dist/index.mjs"
 		},
 		"./esnext": {
 			"types": "./dist/index.d.ts",
-			"default": "./dist/esnext.js"
+			"import": "./dist/esnext.mjs",
+			"require": "./dist/esnext.cjs",
+			"default": "./dist/esnext.mjs"
 		}
 	},
 	"scripts": {
@@ -31,5 +35,8 @@
 		"ts-jest": "^29.1.2",
 		"typescript": "^5.3.3",
 		"zx": "^7.2.3"
+	},
+	"dependencies": {
+		"@jest/globals": "^29.7.0"
 	}
 }

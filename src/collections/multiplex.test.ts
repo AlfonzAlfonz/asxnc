@@ -1,4 +1,4 @@
-import { fork } from "./fork";
+import { fork } from "../utils/fork";
 import { multiplex } from "./multiplex";
 import { pubsub } from "./pubsub";
 

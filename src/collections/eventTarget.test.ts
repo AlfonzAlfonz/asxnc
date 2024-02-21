@@ -1,5 +1,5 @@
 import { eventTarget } from "./eventTarget";
-import { fork } from "./fork";
+import { fork } from "../utils/fork";
 import { pubsub } from "./pubsub";
 
 test("eventTarget", async () => {

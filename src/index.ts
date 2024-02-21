@@ -1,14 +1,25 @@
-import { collect } from "./collect";
-import { ejectedPromise, EjectedPromise } from "./ejectedPromise";
-import { eventTarget } from "./eventTarget";
-import { fork } from "./fork";
-import { lock, Lock } from "./lock";
-import { pubsub, PubSub } from "./pubsub";
-import { queue, Queue } from "./queue";
+import {
+	AsxncEventTarget,
+	AsxncEventTargetSubscriber,
+	eventTarget,
+} from "./collections/eventTarget";
+import { PubSub, pubsub } from "./collections/pubsub";
+import { Queue, queue } from "./collections/queue";
+import { Registry, registry } from "./collections/registry";
+import { instant } from "./scheduling/instant";
+import { wait } from "./scheduling/wait";
+import {
+	EjectedPromise,
+	ejectedPromise,
+} from "./synchronization/ejectedPromise";
+import { Lock, lock } from "./synchronization/lock";
 import { asyncIterableIterator } from "./utils/asyncIterableIterator";
-import { instant } from "./utils/instant";
+import { collect } from "./utils/collect";
+import { fork } from "./utils/fork";
 import { isIterable } from "./utils/isIterable";
 import { isIterator } from "./utils/isIterator";
+import { LabeledTuple, labeledTuple } from "./utils/labeledTuple";
+import { race } from "./utils/race";
 
 export const asxnc = {
 	asyncIterableIterator,
@@ -22,6 +33,10 @@ export const asxnc = {
 	lock,
 	pubsub,
 	queue,
+	wait,
+	registry,
+	labeledTuple,
+	race,
 };
 
 export {
@@ -33,9 +48,22 @@ export {
 	instant,
 	isIterable,
 	isIterator,
+	labeledTuple,
 	lock,
 	pubsub,
 	queue,
+	race,
+	registry,
+	wait,
 };
 
-export type { EjectedPromise, Lock, PubSub, Queue };
+export type {
+	AsxncEventTarget,
+	AsxncEventTargetSubscriber,
+	EjectedPromise,
+	LabeledTuple,
+	Lock,
+	PubSub,
+	Queue,
+	Registry,
+};

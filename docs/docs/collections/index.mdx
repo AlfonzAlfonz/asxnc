@@ -1,0 +1,234 @@
+---
+sidebar_position: 3
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Collections
+
+Asxnc provides two types of collections: `pubsub` and `queue`. Both
+collections return iterator and a dispatch function, which can be accessed as a
+tuple or a object.
+
+<Tabs>
+<TabItem value="tuple" label="Tuple">
+
+```ts
+import { asxnc } from "asxnc";
+
+const [iterable, dispatch] = asxnc.pubsub();
+```
+
+</TabItem>
+
+<TabItem value="object" label="Object">
+
+```ts
+import { asxnc } from "asxnc";
+
+const { iterable, dispatch } = asxnc.pubsub();
+```
+
+</TabItem>
+</Tabs>
+
+## Basic collections
+
+### pubsub()
+
+Function pubsub constructs 1-publisher 1-subscriber channel where every message
+needs to be consumed before the next one can be pushed.
+
+```ts title="example.ts"
+import { asxnc } from "asxnc";
+
+const [iterator, dispatch] = asxnc.pubsub<number>();
+
+await asxnc.fork(
+	async () => {
+		for await (const v of iterator) {
+			console.log(v);
+		}
+	},
+	async () => {
+		// each dispatch call needs to be awaited
+		await dispatch({ done: false, value: 1 });
+		await dispatch({ done: false, value: 2 });
+		await dispatch({ done: false, value: 3 });
+		await dispatch({ done: true, value: undefined });
+	},
+);
+```
+
+### queue()
+
+Function queue constructs N-publishers 1-subscriber channel, which buffers
+messages and allows multiple publishers pushing messages to the same collection.
+
+```ts title="example.ts"
+import { asxnc } from "asxnc";
+
+const [iterator, dispatch] = asxnc.pubsub<number>();
+
+await asxnc.fork(
+	async () => {
+		for await (const v of iterator) {
+			console.log(v);
+		}
+	},
+	axnc
+		.fork(
+			// Multiple functions may call dispatch
+			async () => {
+				// Dispatch does not need to be awaited
+				dispatch({ done: false, value: 1 });
+				dispatch({ done: false, value: 2 });
+				// Artificially split execution
+				await asxnc.instant();
+				dispatch({ done: false, value: 3 });
+			},
+			async () => {
+				dispatch({ done: false, value: 1 });
+				await asxnc.instant();
+				dispatch({ done: false, value: 2 });
+				dispatch({ done: false, value: 3 });
+			},
+		)
+		.then(() => {
+			dispatch({ done: true, value: undefined });
+		}),
+);
+```
+
+## Collection wrappers
+
+In addition, Asxnc also provides "wrappers", which extend
+functionality of other iterables. They accept any iterator, iterable or asxnc
+collection.
+
+<Tabs>
+<TabItem value="iterator" label="Iterator / iterable">
+
+```ts
+import { asxnc } from "asxnc";
+
+async function* randomNumbers() {
+	while (true) {
+		await asxnc.wait(100);
+		yield Math.random();
+	}
+}
+
+const iterable = asxnc.multiplex(randomNumbers());
+```
+
+</TabItem>
+
+<TabItem value="collection" label="Asxnc collection">
+
+```ts
+import { asxnc } from "asxnc";
+
+const [iterable, dispatch] = asxnc.multiplex(asxnc.pubsub());
+```
+
+</TabItem>
+</Tabs>
+
+### multiplex()
+
+`multiplex` function wraps any iterator/iterable or a asxnc collection.
+
+<Tabs>
+<TabItem value="iterator" label="Iterator / iterable">
+
+```ts
+import { asxnc } from "asxnc";
+
+async function* randomNumbers() {
+	while (true) {
+		await asxnc.wait(100);
+		yield Math.random();
+	}
+}
+
+const iterable = asxnc.multiplex(randomNumbers());
+
+await asxnc.fork(
+	// Every number will be outputted to the console twice
+	async () => {
+		for await (const v of iterable) {
+			console.log(v);
+		}
+	},
+	async () => {
+		for await (const v of iterable) {
+			console.log(v);
+		}
+	},
+);
+```
+
+</TabItem>
+
+<TabItem value="collection" label="Asxnc collection">
+
+```ts
+import { asxnc } from "asxnc";
+
+const [iterable, dispatch] = asxnc.multiplex(asxnc.pubsub());
+
+await asxnc.fork(
+	// Every number will be outputted to the console twice
+	async () => {
+		for await (const v of iterable) {
+			console.log(v);
+		}
+	},
+	async () => {
+		for await (const v of iterable) {
+			console.log(v);
+		}
+	},
+);
+```
+
+</TabItem>
+</Tabs>
+
+### eventTarget()
+
+`eventTarget` mimics features of native EventTarget, but provides better typescript
+support and its api is built around async iteration. `eventTarget` may have
+multiple subscribers and multiple publishers (even for the same event).
+
+```ts
+import { asxnc } from "asxnc";
+
+type Event =
+	| ["open", { filePath: string; mode: string }]
+	| ["close", { filePath: string }]
+	| ["write", { contents: string }];
+
+const [events, dispatch] = asxnc.eventTarget(asxnc.pubsub());
+
+await asxnc.fork(
+	async () => {
+		for await (const { filePath, mode } of events.event("open")) {
+			console.log(`Opening file ${filePath} with mode ${mode}.`);
+		}
+	},
+	async () => {
+		for await (const { filePath } of events.event("close")) {
+			console.log(`Opening file ${filePath}.`);
+		}
+	},
+	async () => {
+		// rest() yields all events which don't have any subscriber
+		for await (const [type, detail] of events.rest()) {
+			console.warn(`Unexpected event ${type}.`);
+		}
+	},
+);
+```

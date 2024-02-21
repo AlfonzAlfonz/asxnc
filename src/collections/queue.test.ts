@@ -1,7 +1,7 @@
 import { queue } from "./queue";
-import { fork } from "./fork";
-import { instant } from "./utils/instant";
-import { collect } from "./collect";
+import { fork } from "../utils/fork";
+import { instant } from "../scheduling/instant";
+import { collect } from "../utils/collect";
 
 test("queue", async () => {
 	const [iterator, dispatch] = queue<number>();
@@ -57,3 +57,27 @@ test("queue - reject", async () => {
 	);
 	expect(error).toBeInstanceOf(Error);
 });
+
+test("no wait", async () => {
+	const [iterator, dispatch] = queue<number>();
+
+	const generate1To3 = async () => {
+		dispatch({ done: false, value: 1 });
+		dispatch({ done: false, value: 2 });
+		dispatch({ done: false, value: 3 });
+	};
+
+	const generate4To6 = async () => {
+		dispatch({ done: false, value: 4 });
+		dispatch({ done: false, value: 5 });
+		dispatch({ done: false, value: 6 });
+		dispatch({ done: true, value: undefined });
+	};
+
+	const [result] = await fork(collect(iterator), async () => {
+		generate1To3();
+		generate4To6();
+	});
+
+	expect(result.length).toBe(6);
+}, 1000);

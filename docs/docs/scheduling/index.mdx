@@ -1,0 +1,68 @@
+---
+sidebar_position: 4
+---
+
+# Scheduling
+
+Native JavaScript functions for scheduling execution (such as setTimeout or
+setInterval) use callback pattern instead of promises or iteration. Asxnc
+provides thin wrapper around them to provide such interface.
+
+## wait()
+
+Alternative to `setTimeout()` function. Returns promise which is resolved after set
+duration.
+
+```typescript
+import { asxnc } from "asxnc";
+
+const before = performance.now();
+
+await asxnc.wait(300); // wait for 300ms
+await asxnc.wait(1, "s"); // wait for 1s
+
+console.log(performance.now() - before); // 1302.94538699999976
+```
+
+## instant()
+
+More descriptive alternative to calling `Promise.resolve()`.
+
+```typescript
+import { asxnc } from "asxnc";
+
+const str = "";
+
+const asyncFunc = async () => {
+	str += "a";
+	await asxnc.instant();
+	str += "c";
+};
+
+asyncFunc(); // missing await
+str += "c";
+
+console.log(str); // abc
+```
+
+## pulse()
+
+Alternative to `setInverval()` returning async iterator, which yields until
+cancelled.
+
+```typescript
+import { asxnc } from "asxnc";
+
+const pulse = asxnc.pulse();
+
+let count = 0;
+
+for await (const _ of pulse) {
+	count++;
+	if (count === 3) {
+		pulse.cancel();
+	}
+}
+
+console.log(count); // 3
+```

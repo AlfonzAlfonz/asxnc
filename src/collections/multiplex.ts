@@ -1,21 +1,37 @@
-import { queue } from "./queue";
-import { LabeledTuple, labeledTuple } from "./utils/labeledTuple";
-import { toAsyncIterator } from "./utils/toAsyncIterator";
+import { Queue, queue } from "./queue";
+import { LabeledTuple, labeledTuple } from "../utils/labeledTuple";
+import { toAsyncIterator } from "../utils/toAsyncIterator";
 
 export interface MultiplexFunction {
 	<T>(collection: AsyncIterable<T> | AsyncIterator<T>): AsyncIterable<T>;
 
-	<T, TDispatch extends (v: IteratorResult<T>) => unknown>(
-		collection: readonly [
-			AsyncIterable<T> | AsyncIterator<T>,
-			TDispatch,
+	<
+		TCollection extends readonly [
+			AsyncIterable<unknown> | AsyncIterator<unknown>,
+			(v: IteratorResult<never>) => unknown,
 			(e: unknown) => void,
 		],
-	): LabeledTuple<
-		readonly [AsyncIterable<T>, TDispatch],
-		readonly ["iterable", "dispatch"]
-	>;
+	>(
+		collection: TCollection,
+	): Multiplexed<TCollection>;
 }
+
+export type Multiplexed<
+	TCollection extends readonly [
+		AsyncIterable<unknown> | AsyncIterator<unknown>,
+		(v: IteratorResult<never>) => unknown,
+		(e: unknown) => void,
+	],
+> = LabeledTuple<
+	readonly [
+		TCollection[0] extends AsyncIterable<infer T> | AsyncIterator<infer T>
+			? AsyncIterable<T>
+			: never,
+		TCollection[1],
+		TCollection[2],
+	],
+	readonly ["iterable", "dispatch", "reject"]
+>;
 
 export const multiplex: MultiplexFunction = (collection: any): any => {
 	if (Array.isArray(collection)) {

@@ -1,12 +1,12 @@
-import { asyncIterableIterator } from "./utils/asyncIterableIterator";
-import { ejectedPromise } from "./ejectedPromise";
-import { LabeledTuple, labeledTuple } from "./utils/labeledTuple";
-import { lock } from "./lock";
+import { asyncIterableIterator } from "../utils/asyncIterableIterator";
+import { ejectedPromise } from "../synchronization/ejectedPromise";
+import { LabeledTuple, labeledTuple } from "../utils/labeledTuple";
+import { lock } from "../synchronization/lock";
 
-export type PubSub<T, TReturn = unknown> = LabeledTuple<
+export type PubSub<T> = LabeledTuple<
 	readonly [
 		iterator: AsyncIterableIterator<T>,
-		dispatch: (value: IteratorResult<T, TReturn>) => Promise<void>,
+		dispatch: (value: IteratorResult<T>) => Promise<void>,
 		reject: (value: unknown) => Promise<void>,
 	],
 	readonly ["iterator", "dispatch", "reject"]
@@ -17,8 +17,8 @@ export type PubSub<T, TReturn = unknown> = LabeledTuple<
  * retrieving values and a dispatch function which sends value to the iterator and
  * returns promise which resolves after the value is consumed.
  */
-export const pubsub = <T, TReturn = unknown>(): PubSub<T, TReturn> => {
-	type Value = IteratorResult<T, TReturn>;
+export const pubsub = <T>(): PubSub<T> => {
+	type Value = IteratorResult<T>;
 
 	let [processingPromise, processingResolve] = lock();
 	let [promise, resolve, reject] = ejectedPromise<Value>();

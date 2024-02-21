@@ -1,0 +1,62 @@
+---
+sidebar_position: 1
+---
+
+# Asxnc introduction
+
+Asxnc (pronounced the same as async) is a collection of primitives for async
+ts programming. This library complements standard web APIs and builds upon them.
+
+## Why Asxnc?
+
+- Wide range of async utilities
+- Small footprint (~2KB uncompressed)
+- Zero dependencies
+- Uses promises, async iterables and async iterators
+
+:::warning
+
+This library provides low-level primitives which may introduce **deadlocks** to
+your application. Promises are usually constructed in such way that deadlocks
+are impossible, this library does not do that and provides APIs which returns
+promises which may hang forever if not resolved explicitly (e.g. [lock()](/docs/synchronization/lock)).
+
+:::
+
+## Install
+
+```sh
+npm i asxnc
+
+pnpm i asxnc
+
+yarn add axnc
+```
+
+## Labeled tuples
+
+resulting values as properties. //todo: vieme popisat use namiesto implementacie?
+
+```ts
+import { asxnc } from "asxnc";
+
+// as tuple
+const [iterator, dispatch] = asnxc.queue();
+
+// as object
+const { iterator, dispatch } = asnxc.queue();
+```
+
+This is useful when exporting values created by those functions.
+
+```ts
+// userQueue.ts
+import { asxnc } from "asxnc";
+
+export const userQueue = asxnc.queue();
+
+// index.ts
+import { userQueue } from "./userQueue";
+
+userQueue.dispatch({ id: 3, username: "Jeff" });
+```
