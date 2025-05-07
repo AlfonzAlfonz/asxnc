@@ -1,0 +1,84 @@
+import { asyncIterableIterator } from "./.internal/asyncIterableIterator";
+import { LabeledTuple, labeledTuple } from "./.internal/labeledTuple";
+import { ejectedPromise } from "./ejectedPromise";
+
+export type Queue<T> = LabeledTuple<
+	[
+		iterator: AsyncIterableIterator<T> & {
+			shiftSync: () => IteratorResult<T> | undefined;
+		},
+		dispatch: (value: IteratorResult<T>) => void,
+		reject: (e: unknown) => void,
+	],
+	{
+		iterator: AsyncIterableIterator<T> & {
+			shiftSync: () => IteratorResult<T> | undefined;
+		};
+		dispatch: (value: IteratorResult<T>) => void;
+		reject: (e: unknown) => void;
+	}
+>;
+
+/**
+ * Queue is a 1-reader N-writers data structure, which allows multiple producers
+ * to dispatch data and a single consumer to consume them. All dispatched values
+ * are stored and can be read only once.
+ *
+ * @category Collections
+ *
+ * @example
+ * const queue = Queue.create();
+ *
+ * fork([
+ *   async () => {
+ *     const result = []
+ *     for (const value of queue.iterator) {
+ *       result.push(value);
+ *     }
+ *     console.log(result); // [1, 2, 3]
+ *   }
+ *   async () => {
+ *     queue.dispatch(1);
+ *     queue.dispatch(2);
+ *     queue.dispatch(3);
+ *   }
+ * ])
+ */
+export const Queue = {
+	create: <T>(): Queue<T> => {
+		let lock = ejectedPromise<void>();
+		const queue: IteratorResult<T>[] = [];
+
+		const iterator = asyncIterableIterator({
+			next: async () => {
+				while (true) {
+					if (queue.length === 0) {
+						await lock.promise;
+						lock = ejectedPromise<void>();
+					} else {
+						break;
+					}
+				}
+
+				return queue.shift()!;
+			},
+			shiftSync: () => {
+				if (queue.length === 0) return undefined;
+				else return queue.shift();
+			},
+		});
+
+		const dispatch = (v: IteratorResult<T>) => {
+			queue.push(v);
+			lock.resolve();
+		};
+
+		const reject = lock.reject;
+
+		return labeledTuple([iterator, dispatch, reject], {
+			iterator,
+			dispatch,
+			reject,
+		});
+	},
+};
