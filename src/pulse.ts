@@ -1,4 +1,4 @@
-import { lock, Lock } from "./lock";
+import { Lock } from "./Lock";
 import { asyncIterableIterator } from "./.internal/asyncIterableIterator";
 import { units } from "./wait";
 
@@ -18,12 +18,12 @@ export const pulse = (
 	unit: "ms" | "s" | "m" = "ms",
 	signal: AbortSignal | undefined,
 ) => {
-	let l: Lock | null = lock();
+	let lock: Lock | null = Lock.create();
 
 	const id = setInterval(() => {
-		if (l) {
-			l.resolve();
-			l = lock();
+		if (lock) {
+			lock.resolve();
+			lock = Lock.create();
 		}
 	}, duration * units[unit]);
 
@@ -31,8 +31,8 @@ export const pulse = (
 
 	return asyncIterableIterator({
 		next: async () => {
-			if (l) {
-				await l.promise;
+			if (lock) {
+				await lock.promise;
 				return { value: undefined, done: false };
 			} else {
 				return { value: undefined, done: true };

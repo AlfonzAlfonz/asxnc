@@ -1,7 +1,7 @@
 import { asyncIterableIterator } from "./.internal/asyncIterableIterator";
-import { ejectedPromise } from "./ejectedPromise";
+import { EjectedPromise } from "./EjectedPromise";
 import { LabeledTuple, labeledTuple } from "./.internal/labeledTuple";
-import { lock } from "./lock";
+import { Lock } from "./Lock";
 
 export type PubSub<T> = LabeledTuple<
 	[
@@ -28,29 +28,29 @@ export const Pubsub = {
 	create: <T>(): PubSub<T> => {
 		type Value = IteratorResult<T>;
 
-		let [processingPromise, processingResolve] = lock();
-		let p = ejectedPromise<Value>();
+		let lock = Lock.create();
+		let p = EjectedPromise.create<Value>();
 
 		const iterator = asyncIterableIterator({
 			next: async () => {
-				processingResolve();
+				lock.resolve();
 
 				const result = await p.promise;
-				[processingPromise, processingResolve] = lock();
+				lock = Lock.create();
 				return result;
 			},
 		});
 
 		const dispatch = async (value: IteratorResult<T>) => {
-			await processingPromise;
+			await lock.promise;
 			p.resolve(value);
-			p = ejectedPromise<Value>();
+			p = EjectedPromise.create<Value>();
 		};
 
 		const reject = async (e: unknown) => {
-			await processingPromise;
+			await lock.promise;
 			reject(e);
-			p = ejectedPromise<Value>();
+			p = EjectedPromise.create<Value>();
 		};
 
 		return labeledTuple([iterator, dispatch, reject], {

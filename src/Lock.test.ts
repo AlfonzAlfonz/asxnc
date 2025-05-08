@@ -1,7 +1,7 @@
-import { lock } from "./lock";
+import { Lock } from "./Lock";
 
-test("lock", async () => {
-	const { promise, resolve } = lock();
+test("Lock", async () => {
+	const { promise, resolve } = Lock.create();
 
 	let resolved = false;
 	promise.then(() => (resolved = true));

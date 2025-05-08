@@ -1,6 +1,6 @@
 import { asyncIterableIterator } from "./.internal/asyncIterableIterator";
 import { LabeledTuple, labeledTuple } from "./.internal/labeledTuple";
-import { ejectedPromise } from "./ejectedPromise";
+import { EjectedPromise } from "./EjectedPromise";
 
 export type Queue<T> = LabeledTuple<
 	[
@@ -46,7 +46,7 @@ export type Queue<T> = LabeledTuple<
  */
 export const Queue = {
 	create: <T>(): Queue<T> => {
-		let lock = ejectedPromise<void>();
+		let lock = EjectedPromise.create<void>();
 		const queue: IteratorResult<T>[] = [];
 
 		const iterator = asyncIterableIterator({
@@ -54,7 +54,7 @@ export const Queue = {
 				while (true) {
 					if (queue.length === 0) {
 						await lock.promise;
-						lock = ejectedPromise<void>();
+						lock = EjectedPromise.create<void>();
 					} else {
 						break;
 					}

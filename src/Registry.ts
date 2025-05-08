@@ -1,4 +1,4 @@
-import { ejectedPromise } from "./ejectedPromise";
+import { EjectedPromise } from "./EjectedPromise";
 import { LabeledTuple, labeledTuple } from "./.internal/labeledTuple";
 import { Prettify } from "./.internal/types";
 
@@ -42,7 +42,7 @@ export const Registry = {
 			}
 
 			const [promise, resolve] =
-				ejectedPromise<Prettify<TEntry & [T, unknown]>[1]>();
+				EjectedPromise.create<Prettify<TEntry & [T, unknown]>[1]>();
 
 			if (subscribers.has(key)) {
 				subscribers.get(key)!.push(resolve);
