@@ -9,7 +9,11 @@
 	],
 	"description": "A collection of useful async utilities",
 	"exports": {
-		"./*": "./dist/*"
+		"./*": {
+			"types": "./dist/*.d.ts",
+			"import": "./dist/*.mjs",
+			"require": "./dist/*.cjs"
+		}
 	},
 	"scripts": {
 		"build": "tsc --noEmit && node ./build.mjs",
