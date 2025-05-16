@@ -1,6 +1,6 @@
-import { Lock } from "./Lock";
-import { asyncIterableIterator } from "./.internal/asyncIterableIterator";
-import { units } from "./wait";
+import { Lock } from "./Lock.js";
+import { asyncIterableIterator } from "./.internal/asyncIterableIterator.js";
+import { units } from "./wait.js";
 
 /**
  * The `pulse()` function returns an async iterator which yields in set interval

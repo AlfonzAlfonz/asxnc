@@ -1,4 +1,4 @@
-import { Lock } from "./Lock";
+import { Lock } from "./Lock.js";
 
 test("Lock", async () => {
 	const { promise, resolve } = Lock.create();

@@ -1,4 +1,4 @@
-import { EjectedPromise } from "./EjectedPromise";
+import { EjectedPromise } from "./EjectedPromise.js";
 
 export type Lock = EjectedPromise<void>;
 

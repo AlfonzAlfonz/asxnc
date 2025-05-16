@@ -1,8 +1,8 @@
-import { asyncIterableIterator } from "./.internal/asyncIterableIterator";
-import { lineup } from "./.internal/lineup";
-import { toAsyncIterator } from "./.internal/toAsyncIterator";
-import { AsyncIterableish, AsyncIterableishValue } from "./.internal/types";
-import { Queue } from "./Queue";
+import { asyncIterableIterator } from "./.internal/asyncIterableIterator.js";
+import { lineup } from "./.internal/lineup.js";
+import { toAsyncIterator } from "./.internal/toAsyncIterator.js";
+import { AsyncIterableish, AsyncIterableishValue } from "./.internal/types.js";
+import { Queue } from "./Queue.js";
 
 /**
  * @category Transformers
@@ -110,6 +110,10 @@ export const Mux = {
 			>;
 		};
 	},
+	adapter: <T extends [string, unknown]>(
+		iterable: AsyncIterableish<T>,
+		adapter: Adapter<T>,
+	) => {},
 };
 
 type MuxToDictionary<T extends Record<string, AsyncIterableish<unknown>>> = {
@@ -119,5 +123,9 @@ type MuxToDictionary<T extends Record<string, AsyncIterableish<unknown>>> = {
 type ObjEntries<T> = {
 	[K in keyof T]: [K, T[K]];
 }[keyof T];
+
+type Adapter<T extends [string, unknown]> = {
+	[K in T as K[0]]: (v: K[1]) => unknown;
+};
 
 type PrettifyIntersection<T> = T extends [infer X, infer Y] ? [X, Y] : never;

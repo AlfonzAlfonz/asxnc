@@ -1,4 +1,5 @@
-import { wait } from "./wait";
+import { wait } from "./wait.js";
+import { jest } from "@jest/globals";
 
 test("wait", async () => {
 	jest.useFakeTimers();

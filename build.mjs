@@ -21,7 +21,6 @@ await Promise.all([
 		entryPoints: files,
 		format: "esm",
 		outdir: "./dist",
-		outExtension: { ".js": ".mjs" },
 	}),
 	build({
 		entryPoints: files,

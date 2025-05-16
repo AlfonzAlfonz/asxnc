@@ -1,6 +1,7 @@
-import { fork } from "./fork";
-import { Registry } from "./Registry";
-import { wait } from "./wait";
+import { fork } from "./fork.js";
+import { Registry } from "./Registry.js";
+import { wait } from "./wait.js";
+import { jest } from "@jest/globals";
 
 interface Db {
 	select: () => any;

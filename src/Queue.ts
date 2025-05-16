@@ -1,6 +1,6 @@
-import { asyncIterableIterator } from "./.internal/asyncIterableIterator";
-import { LabeledTuple, labeledTuple } from "./.internal/labeledTuple";
-import { EjectedPromise } from "./EjectedPromise";
+import { asyncIterableIterator } from "./.internal/asyncIterableIterator.js";
+import { LabeledTuple, labeledTuple } from "./.internal/labeledTuple.js";
+import { EjectedPromise } from "./EjectedPromise.js";
 
 export type Queue<T> = LabeledTuple<
 	[

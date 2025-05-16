@@ -1,4 +1,4 @@
-import { Prettify } from "./types";
+import { Prettify } from "./types.js";
 
 export const asyncIterableIterator = <
 	TObj extends {

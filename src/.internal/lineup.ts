@@ -1,4 +1,4 @@
-import { Queue } from "../Queue";
+import { Queue } from "../Queue.js";
 
 export const lineup = <T>(promises: Promise<T>[]) => {
 	const { iterator, dispatch, reject } = Queue.create<T>();

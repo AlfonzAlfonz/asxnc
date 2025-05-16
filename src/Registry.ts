@@ -1,6 +1,6 @@
-import { EjectedPromise } from "./EjectedPromise";
-import { LabeledTuple, labeledTuple } from "./.internal/labeledTuple";
-import { Prettify } from "./.internal/types";
+import { EjectedPromise } from "./EjectedPromise.js";
+import { LabeledTuple, labeledTuple } from "./.internal/labeledTuple.js";
+import { Prettify } from "./.internal/types.js";
 
 export type Registry<TEntry extends [unknown, unknown]> = LabeledTuple<
 	[

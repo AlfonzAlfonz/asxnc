@@ -1,4 +1,4 @@
-import { EjectedPromise } from "./EjectedPromise";
+import { EjectedPromise } from "./EjectedPromise.js";
 
 test("EjectedPromise", async () => {
 	const [promise, resolve] = EjectedPromise.create<number>();

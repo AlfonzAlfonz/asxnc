@@ -1,4 +1,5 @@
-import { pulse } from "./pulse";
+import { pulse } from "./pulse.js";
+import { jest } from "@jest/globals";
 
 test.only("pulse", async () => {
 	jest.useFakeTimers();

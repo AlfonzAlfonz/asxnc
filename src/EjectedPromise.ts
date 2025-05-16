@@ -1,4 +1,4 @@
-import { LabeledTuple, labeledTuple } from "./.internal/labeledTuple";
+import { LabeledTuple, labeledTuple } from "./.internal/labeledTuple.js";
 
 export type EjectedPromise<T> = LabeledTuple<
 	[

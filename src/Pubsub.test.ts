@@ -1,6 +1,6 @@
-import { collect } from "./collect";
-import { fork } from "./fork";
-import { Pubsub } from "./Pubsub";
+import { collect } from "./collect.js";
+import { fork } from "./fork.js";
+import { Pubsub } from "./Pubsub.js";
 
 test("Pubsub", async () => {
 	const [iterator, dispatch] = Pubsub.create<number>();

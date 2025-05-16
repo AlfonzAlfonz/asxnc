@@ -1,7 +1,7 @@
-import { Queue } from "./Queue";
-import { fork } from "./fork";
-import { instant } from "./.internal/instant";
-import { collect } from "./collect";
+import { Queue } from "./Queue.js";
+import { fork } from "./fork.js";
+import { instant } from "./.internal/instant.js";
+import { collect } from "./collect.js";
 
 test("Queue", async () => {
 	const [iterator, dispatch] = Queue.create<number>();

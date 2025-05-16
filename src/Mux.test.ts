@@ -1,6 +1,6 @@
-import { collect } from "./collect";
-import { Mux } from "./Mux";
-import { Queue } from "./Queue";
+import { collect } from "./collect.js";
+import { Mux } from "./Mux.js";
+import { Queue } from "./Queue.js";
 
 test("Mux.join", async () => {
 	const personQueue = Queue.create<{ name: string }>();

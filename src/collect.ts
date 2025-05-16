@@ -1,4 +1,4 @@
-import { toAsyncIterable } from "./.internal/toAsyncIterable";
+import { toAsyncIterable } from "./.internal/toAsyncIterable.js";
 
 /**
  * The `collect()` function takes an async iterable or async iterator, iterates

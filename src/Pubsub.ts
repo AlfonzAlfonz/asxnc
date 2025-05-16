@@ -1,7 +1,7 @@
-import { asyncIterableIterator } from "./.internal/asyncIterableIterator";
-import { LabeledTuple, labeledTuple } from "./.internal/labeledTuple";
-import { EjectedPromise } from "./EjectedPromise";
-import { Lock } from "./Lock";
+import { asyncIterableIterator } from "./.internal/asyncIterableIterator.js";
+import { LabeledTuple, labeledTuple } from "./.internal/labeledTuple.js";
+import { EjectedPromise } from "./EjectedPromise.js";
+import { Lock } from "./Lock.js";
 
 export type PubSub<T> = LabeledTuple<
 	[
