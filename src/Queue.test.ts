@@ -7,31 +7,31 @@ test("Queue", async () => {
 	const [iterator, dispatch] = Queue.create<number>();
 
 	const generate1To3 = async () => {
-		dispatch({ done: false, value: 1 });
+		dispatch(1);
 		await instant();
 
-		dispatch({ done: false, value: 2 });
+		dispatch(2);
 		await instant();
 
-		dispatch({ done: false, value: 3 });
+		dispatch(3);
 		await instant();
 	};
 
 	const generate4To6 = async () => {
-		dispatch({ done: false, value: 4 });
+		dispatch(4);
 		await instant();
 
-		dispatch({ done: false, value: 5 });
+		dispatch(5);
 		await instant();
 
-		dispatch({ done: false, value: 6 });
+		dispatch(6);
 		await instant();
 	};
 
 	const [result] = await Promise.all([
 		collect(iterator),
 		Promise.all([generate1To3(), generate4To6()]).then(() =>
-			dispatch({ done: true, value: undefined }),
+			dispatch(undefined, true),
 		),
 	]);
 
@@ -63,16 +63,16 @@ test("Queue - no wait", async () => {
 	const [iterator, dispatch] = Queue.create<number>();
 
 	const generate1To3 = async () => {
-		dispatch({ done: false, value: 1 });
-		dispatch({ done: false, value: 2 });
-		dispatch({ done: false, value: 3 });
+		dispatch(1);
+		dispatch(2);
+		dispatch(3);
 	};
 
 	const generate4To6 = async () => {
-		dispatch({ done: false, value: 4 });
-		dispatch({ done: false, value: 5 });
-		dispatch({ done: false, value: 6 });
-		dispatch({ done: true, value: undefined });
+		dispatch(4);
+		dispatch(5);
+		dispatch(6);
+		dispatch(undefined, true);
 	};
 
 	const [result] = await fork([

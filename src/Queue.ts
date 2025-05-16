@@ -1,5 +1,6 @@
 import { asyncIterableIterator } from "./.internal/asyncIterableIterator.js";
 import { LabeledTuple, labeledTuple } from "./.internal/labeledTuple.js";
+import { iteratorResult, IteratorResultTuple } from "./.internal/utils.js";
 import { EjectedPromise } from "./EjectedPromise.js";
 
 export type Queue<T> = LabeledTuple<
@@ -7,14 +8,14 @@ export type Queue<T> = LabeledTuple<
 		iterator: AsyncIterableIterator<T> & {
 			shiftSync: () => IteratorResult<T> | undefined;
 		},
-		dispatch: (value: IteratorResult<T>) => void,
+		dispatch: (...args: IteratorResultTuple<T, undefined>) => void,
 		reject: (e: unknown) => void,
 	],
 	{
 		iterator: AsyncIterableIterator<T> & {
 			shiftSync: () => IteratorResult<T> | undefined;
 		};
-		dispatch: (value: IteratorResult<T>) => void;
+		dispatch: (...args: IteratorResultTuple<T, undefined>) => void;
 		reject: (e: unknown) => void;
 	}
 >;
@@ -68,8 +69,8 @@ export const Queue = {
 			},
 		});
 
-		const dispatch = (v: IteratorResult<T>) => {
-			queue.push(v);
+		const dispatch = (...args: IteratorResultTuple<T, undefined>) => {
+			queue.push(iteratorResult(args));
 			lock.resolve();
 		};
 

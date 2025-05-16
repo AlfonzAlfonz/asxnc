@@ -11,10 +11,10 @@ test("Mux.join", async () => {
 		article: articleQueue.iterator,
 	});
 
-	personQueue.dispatch({ value: { name: "jeff" }, done: false });
-	articleQueue.dispatch({ value: { title: "name jeff" }, done: false });
-	personQueue.dispatch({ value: undefined, done: true });
-	articleQueue.dispatch({ value: undefined, done: true });
+	personQueue.dispatch({ name: "jeff" }, false);
+	articleQueue.dispatch({ title: "name jeff" }, false);
+	personQueue.dispatch(undefined, true);
+	articleQueue.dispatch(undefined, true);
 
 	const result = await collect(mux);
 
@@ -29,10 +29,10 @@ test("Mux.split", async () => {
 		["person", { name: string }] | ["article", { title: string }]
 	>();
 
-	mux.dispatch({ value: ["person", { name: "jeff" }], done: false });
-	mux.dispatch({ value: ["article", { title: "name jeff" }], done: false });
-	mux.dispatch({ value: undefined, done: true });
-	mux.dispatch({ value: undefined, done: true });
+	mux.dispatch(["person", { name: "jeff" }], false);
+	mux.dispatch(["article", { title: "name jeff" }], false);
+	mux.dispatch(undefined, true);
+	mux.dispatch(undefined, true);
 
 	const { person, article } = Mux.split(["person", "article"], mux.iterator);
 
@@ -42,4 +42,31 @@ test("Mux.split", async () => {
 		[["person", { name: "jeff" }]],
 		[["article", { title: "name jeff" }]],
 	]);
-}, 5000000);
+});
+
+test("Mux.adapter", async () => {
+	const mux = Queue.create<
+		["person", { name: string }] | ["article", { title: string }]
+	>();
+
+	mux.dispatch(["person", { name: "jeff" }], false);
+	mux.dispatch(["article", { title: "name jeff" }], false);
+	mux.dispatch(undefined, true);
+	mux.dispatch(undefined, true);
+
+	const result: any = {};
+
+	Mux.adapter(mux.iterator, {
+		article: (v: any) => {
+			result.article = v;
+		},
+		person: (v: any) => {
+			result.person = v;
+		},
+	});
+
+	expect(result).toEqual([
+		[["person", { name: "jeff" }]],
+		[["article", { title: "name jeff" }]],
+	]);
+});

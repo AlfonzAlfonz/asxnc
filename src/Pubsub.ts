@@ -2,16 +2,18 @@ import { asyncIterableIterator } from "./.internal/asyncIterableIterator.js";
 import { LabeledTuple, labeledTuple } from "./.internal/labeledTuple.js";
 import { EjectedPromise } from "./EjectedPromise.js";
 import { Lock } from "./Lock.js";
+import { iteratorResult, IteratorResultTuple } from "./.internal/utils.js";
 
 export type PubSub<T> = LabeledTuple<
 	[
 		iterator: AsyncIterableIterator<T>,
-		dispatch: (value: IteratorResult<T>) => Promise<void>,
+		dispatch: (...args: IteratorResultTuple<T, undefined>) => Promise<void>,
 		reject: (value: unknown) => Promise<void>,
 	],
 	{
 		iterator: AsyncIterableIterator<T>;
-		dispatch: (value: IteratorResult<T>) => Promise<void>;
+		dispatch: (...args: IteratorResultTuple<T, undefined>) => Promise<void>;
+		swap: (...args: IteratorResultTuple<T, undefined>) => void;
 		reject: (value: unknown) => Promise<void>;
 	}
 >;
@@ -41,9 +43,15 @@ export const Pubsub = {
 			},
 		});
 
-		const dispatch = async (value: IteratorResult<T>) => {
+		const dispatch = async (...args: IteratorResultTuple<T, undefined>) => {
 			await lock.promise;
-			p.resolve(value);
+			p.resolve(iteratorResult(args));
+			p = EjectedPromise.create<Value>();
+		};
+
+		const swap = async (...args: IteratorResultTuple<T, undefined>) => {
+			await lock.promise;
+			p.resolve(iteratorResult(args));
 			p = EjectedPromise.create<Value>();
 		};
 
@@ -56,6 +64,7 @@ export const Pubsub = {
 		return labeledTuple([iterator, dispatch, reject], {
 			iterator,
 			dispatch,
+			swap,
 			reject,
 		});
 	},

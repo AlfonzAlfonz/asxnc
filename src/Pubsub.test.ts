@@ -15,10 +15,10 @@ test("Pubsub", async () => {
 
 	const oneToThree = async () => {
 		// every dispatch call needs to be awaited
-		await dispatch({ done: false, value: 1 });
-		await dispatch({ done: false, value: 2 });
-		await dispatch({ done: false, value: 3 });
-		await dispatch({ done: true, value: undefined });
+		await dispatch(1, false);
+		await dispatch(2, false);
+		await dispatch(3, false);
+		await dispatch(undefined, true);
 	};
 
 	const [result] = await fork([app, oneToThree]);
@@ -32,10 +32,10 @@ test("Pubsub - iterator first", async () => {
 	const [result] = await fork([
 		collect(iterator),
 		async () => {
-			await dispatch({ done: false, value: 1 });
-			await dispatch({ done: false, value: 2 });
-			await dispatch({ done: false, value: 3 });
-			await dispatch({ done: true, value: undefined });
+			await dispatch(1, false);
+			await dispatch(2, false);
+			await dispatch(3, false);
+			await dispatch(undefined, true);
 		},
 	]);
 
@@ -47,10 +47,10 @@ test("Pubsub - dispatch first", async () => {
 
 	const [, result] = await fork([
 		async () => {
-			await dispatch({ done: false, value: 1 });
-			await dispatch({ done: false, value: 2 });
-			await dispatch({ done: false, value: 3 });
-			await dispatch({ done: true, value: undefined });
+			await dispatch(1, false);
+			await dispatch(2, false);
+			await dispatch(3, false);
+			await dispatch(undefined, true);
 		},
 		collect(iterator),
 	]);

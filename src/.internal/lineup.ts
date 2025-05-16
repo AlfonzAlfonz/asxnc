@@ -7,10 +7,10 @@ export const lineup = <T>(promises: Promise<T>[]) => {
 	promises.map((p) =>
 		p.then(
 			(v) => {
-				dispatch({ value: v, done: false });
+				dispatch(v, false);
 				counter++;
 				if (counter === promises.length) {
-					dispatch({ value: undefined, done: true });
+					dispatch(undefined, true);
 				}
 			},
 			(e) => reject(e),
