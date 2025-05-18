@@ -49,6 +49,7 @@ export const Queue = {
 	create: <T>(): Queue<T> => {
 		let lock = EjectedPromise.create<void>();
 		const queue: IteratorResult<T>[] = [];
+		let closed = false;
 
 		const iterator = asyncIterableIterator({
 			next: async () => {
@@ -70,6 +71,13 @@ export const Queue = {
 		});
 
 		const dispatch = (...args: IteratorResultTuple<T, undefined>) => {
+			if (closed) {
+				throw new Error(`Dispatch new values to closed Queue is not possible.`);
+			}
+			if (args[1] === true) {
+				closed = true;
+			}
+
 			queue.push(iteratorResult(args));
 			lock.resolve();
 		};

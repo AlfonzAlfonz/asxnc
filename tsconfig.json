@@ -3,8 +3,8 @@
 		"target": "esnext",
 		"outDir": "./dist",
 
-		"module": "esnext",
-		"moduleResolution": "bundler",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
 		"moduleDetection": "force",
 		"isolatedModules": true,
 		"esModuleInterop": true,

@@ -7,11 +7,14 @@ export type PylonIterator<T> = AsyncIterableIterator<T> & {
 	readSync: () => T | undefined;
 };
 
+export type PylonSwap<T> = (v: T | ((prev: T) => T)) => void;
+
 export type Pylon<T> = LabeledTuple<
-	[iterator: PylonIterator<T>, swap: (value: T) => void],
+	[iterator: PylonIterator<T>, swap: PylonSwap<T>],
 	{
 		iterator: PylonIterator<T>;
-		swap: (value: T) => void;
+		swap: PylonSwap<T>;
+		bump: () => void;
 	}
 >;
 
@@ -43,14 +46,19 @@ export const Pylon = {
 			},
 		});
 
-		const swap = async (v: T) => {
-			value = v;
+		const swap: PylonSwap<T> = async (v) => {
+			value = typeof v === "function" ? (v as any)(value) : v;
+			writeLock.resolve();
+		};
+
+		const bump = () => {
 			writeLock.resolve();
 		};
 
 		return labeledTuple([iterator, swap], {
 			iterator,
 			swap,
+			bump,
 		});
 	},
 	map: <T, U>(source: PylonIterator<T>, fn: (x: T) => U): PylonIterator<U> => {
