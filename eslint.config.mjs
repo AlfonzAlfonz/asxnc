@@ -5,7 +5,7 @@ import tseslint from "typescript-eslint";
 export default tseslint.config(
 	eslint.configs.recommended,
 	tseslint.configs.recommended,
-	globalIgnores(["dist/**/*", "coverage/**/*"]),
+	globalIgnores(["dist/**/*", "coverage/**/*", "docs/.docusaurus/**/*"]),
 	{
 		rules: {
 			"@typescript-eslint/no-unused-vars": [
@@ -25,6 +25,7 @@ export default tseslint.config(
 			"@typescript-eslint/no-non-null-asserted-optional-chain": "off",
 			"no-undef": "off",
 			"no-useless-escape": "off",
+			"@typescript-eslint/no-require-imports": "off",
 		},
 	},
 );
