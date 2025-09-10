@@ -6,10 +6,8 @@ import { units } from "./wait.js";
  * The `pulse()` function returns an async iterator which yields in set interval
  * by duration.
  *
- * @category Scheduling
- *
  * @example
- * for (const _ of pulse(200, "ms")) {
+ * for await (const _ of pulse(200, "ms")) {
  *   console.log("hello");
  * }
  */

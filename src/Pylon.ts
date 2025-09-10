@@ -19,9 +19,11 @@ export type Pylon<T> = LabeledTuple<
 >;
 
 /**
- * TODO
- *
- * @category Collections
+ * Pylon is a special data structure, which hold a single value and whenever 
+ * this value is updated, it signals to all subscribers about the new value. 
+ * Values of the pylon are buffered, so all subscribers will receive all change 
+ * events (even if the producer updates more quickly than the subscriber can 
+ * handle at the moment).
  */
 export const Pylon = {
 	create: <T>(): Pylon<T> => {

@@ -4,8 +4,6 @@ import { toAsyncIterable } from "./.internal/toAsyncIterable.js";
  * The `collect()` function takes an async iterable or async iterator, iterates
  * it and return an array of all yielded values.
  *
- * @category Utilities
- *
  * @example
  * async function numbers() {
  *   yield 1;

@@ -8,18 +8,14 @@ export type Registry<TEntry extends [unknown, unknown]> = LabeledTuple<
 			key: T,
 		) => Promise<Prettify<TEntry & [T, unknown]>[1]>,
 		register: (...[key, value]: TEntry) => void,
-		getSync: <T extends TEntry[0]>(
-			key: T,
-		) => Prettify<TEntry & [T, unknown]>[1],
+		get: <T extends TEntry[0]>(key: T) => Prettify<TEntry & [T, unknown]>[1],
 	],
 	{
 		waitFor: <T extends TEntry[0]>(
 			key: T,
 		) => Promise<Prettify<TEntry & [T, unknown]>[1]>;
 		register: (...[key, value]: TEntry) => void;
-		getSync: <T extends TEntry[0]>(
-			key: T,
-		) => Prettify<TEntry & [T, unknown]>[1];
+		get: <T extends TEntry[0]>(key: T) => Prettify<TEntry & [T, unknown]>[1];
 	}
 >;
 
@@ -63,7 +59,7 @@ export const Registry = {
 				s(value);
 			}
 		};
-		const getSync = <T extends TEntry[0]>(
+		const get = <T extends TEntry[0]>(
 			key: T,
 		): Prettify<TEntry & [T, unknown]>[1] => {
 			const value = map.get(key);
@@ -73,10 +69,10 @@ export const Registry = {
 			return value;
 		};
 
-		return labeledTuple([waitFor, register, getSync], {
+		return labeledTuple([waitFor, register, get], {
 			waitFor,
 			register,
-			getSync,
+			get,
 		});
 	},
 };

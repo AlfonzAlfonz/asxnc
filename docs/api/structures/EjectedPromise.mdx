@@ -1,0 +1,45 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# EjectedPromise
+
+The `EjectedPromise.create()` function returns a promise and a function to
+resolve and another one to reject it.
+
+Similar to `Promise.withResolvers()` but it can be destructured as both tuple or
+object.
+
+<Tabs>
+  <TabItem value="tuple" label="Tuple" default>
+
+```ts
+import { EjectedPromise, fork } from "asxnc";
+
+const [promise, resolve] = EjectedPromise.create<number>();
+
+fork(async () => {
+	const value = await promise;
+	console.log(value); // 123
+});
+
+resolve(123);
+```
+
+  </TabItem>
+  <TabItem value="object" label="Object">
+
+```ts
+import { EjectedPromise, fork } from "asxnc";
+
+const { promise, resolve } = EjectedPromise.create<number>();
+
+fork(async () => {
+	const value = await promise;
+	console.log(value); // 123
+});
+
+resolve(123);
+```
+
+  </TabItem>
+</Tabs>

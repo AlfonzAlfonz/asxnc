@@ -1,0 +1,44 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Lock
+
+The `Lock.create()` function returns a promise and a function to resolve and
+another one to reject it. It is the same as `EjectedPromise<void>`.
+
+<Tabs>
+  <TabItem value="tuple" label="Tuple" default>
+
+```ts
+import { Lock, fork } from "asxnc";
+
+const [promise, resolve] = Lock.create<void>();
+
+fork(async () => {
+	await promise;
+	console.log("world");
+});
+
+console.log("hello");
+resolve();
+```
+
+  </TabItem>
+  <TabItem value="object" label="Object">
+
+```ts
+import { Lock, fork } from "asxnc";
+
+const ejected = Lock.create<void>();
+
+fork(async () => {
+	await ejected.promise;
+	console.log("world");
+});
+
+console.log("hello");
+ejected.resolve();
+```
+
+  </TabItem>
+</Tabs>

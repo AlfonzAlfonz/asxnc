@@ -1,12 +1,10 @@
 /**
  * The `wait()` function returns a promise which is resolved after a set
  * duration.
- *
- * @category Scheduling
  */
 export const wait = (
 	duration: number,
-	unit: "ms" | "s" | "m" | "h" | "d" = "ms",
+	unit: keyof typeof units = "ms",
 	signal?: AbortSignal,
 ) =>
 	new Promise<void>((resolve) => {

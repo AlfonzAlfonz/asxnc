@@ -1,0 +1,49 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# fork()
+
+The `fork()` function takes an array of promises or functions which return a
+promise and returns a single promise which executes all functions and awaits all
+promises. Similar to `Promise.all()` but executes functions in the input array.
+
+:::tip
+
+It's a good practice to wrap code inside of `fork()` functions with try/catch
+block to prevent unhandled rejections.
+
+:::
+
+<Tabs>
+  <TabItem value="fn" label="Function argument" default>
+
+```ts
+import { fork, wait } from "asxnc";
+
+const result = await fork(async () => {
+	await wait(1, "s");
+	return "hello";
+});
+
+console.log(result); // ["hello"]
+```
+
+  </TabItem>
+  <TabItem value="array" label="Array argument">
+
+```ts
+import { fork, wait } from "asxnc";
+
+const result = await fork([
+	async () => {
+		await wait(1, "s");
+		return "hello";
+	},
+	wait(500).then(() => "world"),
+]);
+
+console.log(result); // ["hello", "world"]
+```
+
+  </TabItem>
+</Tabs>

@@ -4,9 +4,6 @@ import { toAsyncIterator } from "./.internal/toAsyncIterator.js";
 import { AsyncIterableish, AsyncIterableishValue } from "./.internal/types.js";
 import { Queue } from "./Queue.js";
 
-/**
- * @category Transformers
- */
 export const Mux = {
 	join: <T extends Record<string, AsyncIterableish<unknown>>>(iterables: T) => {
 		let currentPollIterator:

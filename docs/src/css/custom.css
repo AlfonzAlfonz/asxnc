@@ -21,3 +21,18 @@
 [data-theme="dark"] {
 	--docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+pre.prism-code {
+	tab-size: 2;
+}
+
+.sidebar-header .menu__list-item-collapsible:hover {
+	background: transparent;
+	cursor: default;
+}
+
+.sidebar-header .menu__list-item-collapsible .menu__link {
+	text-transform: uppercase;
+	font-weight: 700;
+	font-size: 75%;
+}

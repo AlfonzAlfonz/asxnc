@@ -18,8 +18,6 @@ export type EjectedPromise<T> = LabeledTuple<
  * and another one to reject it. Similar to `Promise.withResolvers()` but it
  * supports destructuring by either array destructuring or object destructuring.
  *
- * @category Synchronization
- *
  * @example
  * const { promise, resolve, reject } = EjectedPromise.create();
  * const [promise2, resolve2, reject2] = EjectedPromise.create();

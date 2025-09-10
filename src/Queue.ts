@@ -25,8 +25,6 @@ export type Queue<T> = LabeledTuple<
  * to dispatch data and a single consumer to consume them. All dispatched values
  * are stored and can be read only once.
  *
- * @category Collections
- *
  * @example
  * const queue = Queue.create();
  *
@@ -43,7 +41,7 @@ export type Queue<T> = LabeledTuple<
  *     queue.dispatch(2);
  *     queue.dispatch(3);
  *   }
- * ])
+ * ]);
  */
 export const Queue = {
 	create: <T>(): Queue<T> => {

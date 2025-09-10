@@ -23,8 +23,6 @@ export type PubSub<T> = LabeledTuple<
  * to dispatch data and a single consumer to consume them. Only the last
  * dispatched value is stored and writer needs to wait for the reader to prevent
  * data loss.
- *
- * @category Collections
  */
 export const Pubsub = {
 	create: <T>(): PubSub<T> => {

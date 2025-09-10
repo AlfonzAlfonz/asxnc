@@ -1,0 +1,63 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Queue
+
+Queue is a 1-reader N-writers data structure, which allows multiple producers to
+dispatch data and a single consumer to consume them. All dispatched values are
+stored and can be read only once.
+
+<Tabs>
+  <TabItem value="tuple" label="Tuple" default>
+
+```ts
+import { fork, Queue } from "asxnc";
+
+const [iterator, dispatch] = Queue.create<number>();
+
+fork(async () => {
+	const result = [];
+
+	for await (const value of iterator) {
+		result.push(value);
+	}
+
+	console.log(result); // [1, 2, 3]
+});
+
+dispatch(1);
+dispatch(2);
+dispatch(3);
+
+// close the iterator
+dispatch(undefined, true);
+```
+
+  </TabItem>
+  <TabItem value="object" label="Object">
+
+```ts
+import { fork, Queue } from "asxnc";
+
+const queue = Queue.create<number>();
+
+fork(async () => {
+	const result = [];
+
+	for await (const value of queue.iterator) {
+		result.push(value);
+	}
+
+	console.log(result); // [1, 2, 3]
+});
+
+queue.dispatch(1);
+queue.dispatch(2);
+queue.dispatch(3);
+
+// close the iterator
+queue.dispatch(undefined, true);
+```
+
+  </TabItem>
+</Tabs>

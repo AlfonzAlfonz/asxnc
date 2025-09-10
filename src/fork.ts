@@ -16,8 +16,6 @@ interface Fork {
  * all promises. Similar to `Promise.all()` but executes functions in the input
  * array.
  *
- * @category Utilities
- *
  * @example
  * const result = fork([
  *   async () => {

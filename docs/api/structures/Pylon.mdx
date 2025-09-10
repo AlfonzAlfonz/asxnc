@@ -1,0 +1,112 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Pylon
+
+Pylon is a special data structure, which hold a single value and whenever this
+value is updated, it signals to all subscribers about the new value. Values of
+the pylon are buffered, so all subscribers will receive all change events (even
+if the producer updates more quickly than the subscriber can handle at the
+moment).
+
+:::info
+
+It's a good practice to always create a new state instead of mutating a previous
+one, because there still may be some subscribers which have a reference to it.
+
+:::
+
+Pylon is similar to `EventTarget` or `EventEmitter`, but with more ergonomic API
+and the "event" are handled in series, which prevents race conditions.
+
+<Tabs>
+  <TabItem value="tuple" label="Tuple">
+
+```ts
+import { pulse, Pylon, PylonIterator, PylonSwap } from "asxnc";
+
+interface Configuration {
+	baseUrl: string;
+}
+
+class ConfigurationManager {
+	public readonly value: PylonIterator<Configuration>;
+	private swap: PylonSwap<Configuration>;
+
+	constructor() {
+		[this.value, this.swap] = Pylon.create();
+	}
+
+	async start(signal: AbortSignal | undefined) {
+		for await (const _ of pulse(1, "h", signal)) {
+			const conf = await fetch("...").then((r) => r.json());
+
+			this.state.swap(conf);
+		}
+	}
+}
+
+const manager = new ConfigurationManager();
+
+manager.start(undefined);
+
+// subscribe using async iterator
+for await (const conf of manager.value) {
+	console.log(conf);
+}
+
+// read the current value
+const conf = await manager.value.read();
+console.log(conf);
+
+// read the current value without waiting (undefined is returned if missing)
+const conf = manager.value.readSync();
+console.log(conf);
+```
+
+  </TabItem>
+  <TabItem value="object" label="Object" default>
+
+```ts
+import { pulse, Pylon } from "asxnc";
+
+interface Configuration {
+	baseUrl: string;
+}
+
+class ConfigurationManager {
+	private state = Pylon.create<Configuration>();
+
+	get value() {
+		return state.iterator;
+	}
+
+	async start(signal: AbortSignal | undefined) {
+		for await (const _ of pulse(1, "h", signal)) {
+			const conf = await fetch("...").then((r) => r.json());
+
+			this.state.swap(conf);
+		}
+	}
+}
+
+const manager = new ConfigurationManager();
+
+manager.start(undefined);
+
+// subscribe using async iterator
+for await (const conf of manager.value) {
+	console.log(conf);
+}
+
+// read the current value
+const conf = await manager.value.read();
+console.log(conf);
+
+// read the current value without waiting (undefined is returned if missing)
+const conf = manager.value.readSync();
+console.log(conf);
+```
+
+  </TabItem>
+</Tabs>
