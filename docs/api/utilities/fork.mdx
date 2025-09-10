@@ -18,7 +18,7 @@ block to prevent unhandled rejections.
   <TabItem value="fn" label="Function argument" default>
 
 ```ts
-import { fork, wait } from "asxnc";
+import { fork, wait } from "@alfonz/async";
 
 const result = await fork(async () => {
 	await wait(1, "s");
@@ -32,7 +32,7 @@ console.log(result); // ["hello"]
   <TabItem value="array" label="Array argument">
 
 ```ts
-import { fork, wait } from "asxnc";
+import { fork, wait } from "@alfonz/async";
 
 const result = await fork([
 	async () => {

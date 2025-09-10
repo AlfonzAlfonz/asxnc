@@ -11,7 +11,7 @@ stored and can be read only once.
   <TabItem value="tuple" label="Tuple" default>
 
 ```ts
-import { fork, Queue } from "asxnc";
+import { fork, Queue } from "@alfonz/async";
 
 const [iterator, dispatch] = Queue.create<number>();
 
@@ -37,7 +37,7 @@ dispatch(undefined, true);
   <TabItem value="object" label="Object">
 
 ```ts
-import { fork, Queue } from "asxnc";
+import { fork, Queue } from "@alfonz/async";
 
 const queue = Queue.create<number>();
 

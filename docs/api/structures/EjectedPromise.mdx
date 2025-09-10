@@ -13,7 +13,7 @@ object.
   <TabItem value="tuple" label="Tuple" default>
 
 ```ts
-import { EjectedPromise, fork } from "asxnc";
+import { EjectedPromise, fork } from "@alfonz/async";
 
 const [promise, resolve] = EjectedPromise.create<number>();
 
@@ -29,7 +29,7 @@ resolve(123);
   <TabItem value="object" label="Object">
 
 ```ts
-import { EjectedPromise, fork } from "asxnc";
+import { EjectedPromise, fork } from "@alfonz/async";
 
 const { promise, resolve } = EjectedPromise.create<number>();
 

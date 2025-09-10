@@ -6,7 +6,7 @@ not be accessed after. If acquire is called as some other process owns the
 value, it will wait until that process releases the value.
 
 ```typescript
-import { fork, Mutex, wait } from "asxnc";
+import { fork, Mutex, wait } from "@alfonz/async";
 
 const mutex = Mutex.create<number>();
 

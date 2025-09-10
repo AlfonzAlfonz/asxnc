@@ -10,7 +10,7 @@ another one to reject it. It is the same as `EjectedPromise<void>`.
   <TabItem value="tuple" label="Tuple" default>
 
 ```ts
-import { Lock, fork } from "asxnc";
+import { Lock, fork } from "@alfonz/async";
 
 const [promise, resolve] = Lock.create<void>();
 
@@ -27,7 +27,7 @@ resolve();
   <TabItem value="object" label="Object">
 
 ```ts
-import { Lock, fork } from "asxnc";
+import { Lock, fork } from "@alfonz/async";
 
 const ejected = Lock.create<void>();
 
