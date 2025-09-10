@@ -1,7 +1,6 @@
 export * from "./EjectedPromise.js";
 export * from "./Lock.js";
 export * from "./Mutex.js";
-export * from "./Mux.js";
 export * from "./Pubsub.js";
 export * from "./Pylon.js";
 export * from "./Queue.js";
