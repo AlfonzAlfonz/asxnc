@@ -121,4 +121,18 @@ describe("Queue", () => {
 
 		expect(result).toEqual([0, 1, 2, 3, 4]);
 	});
+
+	test.only("immediately closed", async () => {
+		const [iterator, dispatch] = Queue.create();
+
+		const p = fork(async () => {
+			for await (const _ of iterator) {
+				// noop
+			}
+		});
+
+		dispatch(undefined, true);
+
+		await expect(p).resolves.toBe(undefined);
+	});
 });
