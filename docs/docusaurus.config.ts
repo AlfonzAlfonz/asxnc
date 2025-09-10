@@ -3,7 +3,7 @@ import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 
 const config: Config = {
-	title: "ASXNC",
+	title: "async",
 	tagline: "A collection of useful async utilities",
 	favicon: "img/favicon.ico", // TODO
 
@@ -49,7 +49,7 @@ const config: Config = {
 	themeConfig: {
 		// image: "img/docusaurus-social-card.jpg", // TODO
 		navbar: {
-			title: "ASXNC",
+			title: "async",
 			items: [
 				{
 					type: "docSidebar",
@@ -65,7 +65,7 @@ const config: Config = {
 					label: "API",
 				},
 				{
-					href: "https://github.com/AlfonzAlfonz/asxnc",
+					href: "https://github.com/AlfonzAlfonz/async",
 					label: "GitHub",
 					position: "right",
 				},
