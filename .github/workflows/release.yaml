@@ -1,0 +1,29 @@
+name: Release CI
+
+on:
+  push:
+    tags:
+      - release/**
+
+env:
+  NODE_ENV: production
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+      - run: pnpm i
+      - run: node tools/update-package-json.mjs
+      - run: pnpm run build
+      - run: pnpm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: pnpm publish --no-git-checks --access public
